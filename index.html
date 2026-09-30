@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta name="theme-color" content="#c9a227">
+<meta name="description" content="LA BARBER - Barbería a domicilio. Agenda tu corte sin filas, sin esperas, en tu casa.">
+<title>LA BARBER · Barbería a Domicilio</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💈</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj48cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgZmlsbD0iIzBkMGQwZCIgcng9IjI4Ii8+PHRleHQgeD0iOTYiIHk9IjEzMCIgZm9udC1zaXplPSIxMTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPvCfkrg8L3RleHQ+PC9zdmc+">
+<style>
+:root{
+  --gold:#c9a227;
+  --gold-soft:#e6c869;
+  --black:#0d0d0d;
+  --dark:#161616;
+  --gray:#1f1f1f;
+  --white:#f5f5f5;
+  --muted:#999;
+  --radius:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  background:var(--black);
+  color:var(--white);
+  min-height:100vh;
+  overflow-x:hidden;
+  line-height:1.5;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+img{max-width:100%;display:block}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+a{text-decoration:none;color:inherit}
+
+/* ══════════════════════════════════════════
+   BOTÓN INSTALAR APP — esquina superior derecha
+   ══════════════════════════════════════════ */
+.install-fab{
+  position:fixed;
+  top:14px;
+  right:14px;
+  z-index:9998;
+  display:none;
+  align-items:center;
+  gap:8px;
+  padding:10px 16px 10px 12px;
+  background:linear-gradient(135deg, var(--gold), #a8861c);
+  color:#000;
+  border-radius:30px;
+  font-size:.78rem;
+  font-weight:900;
+  letter-spacing:.5px;
+  text-transform:uppercase;
+  cursor:pointer;
+  box-shadow:0 10px 28px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.15) inset;
+  transition:transform .25s cubic-bezier(.2,.8,.3,1.4), box-shadow .3s;
+  animation:installPop .5s cubic-bezier(.2,.8,.3,1.4), installGlow 2.6s ease-in-out infinite 1s;
+  border:2px solid #fff;
+}
+.install-fab.show{display:inline-flex}
+.install-fab:hover{
+  transform:translateY(-3px) scale(1.04);
+  box-shadow:0 14px 36px rgba(201,162,39,.6), 0 0 0 1px rgba(255,255,255,.2) inset;
+}
+.install-fab:active{
+  transform:translateY(-1px) scale(.98);
+}
+.install-fab .if-ico{
+  font-size:1.05rem;
+  line-height:1;
+  animation:installBounce 2.2s ease-in-out infinite;
+}
+.install-fab .if-text{
+  line-height:1;
+  white-space:nowrap;
+}
+.install-fab .if-x{
+  width:18px;height:18px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:50%;
+  background:rgba(0,0,0,.18);
+  color:#000;
+  font-size:.65rem;
+  font-weight:900;
+  margin-left:4px;
+  transition:background .2s;
+}
+.install-fab .if-x:hover{background:rgba(0,0,0,.35);color:#fff;}
+
+@keyframes installPop{
+  from{opacity:0;transform:translateY(-20px) scale(.7)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+@keyframes installGlow{
+  0%,100%{box-shadow:0 10px 28px rgba(0,0,0,.45), 0 0 0 0 rgba(201,162,39,.7), 0 0 0 1px rgba(255,255,255,.15) inset}
+  50%{box-shadow:0 10px 28px rgba(0,0,0,.45), 0 0 0 12px rgba(201,162,39,0), 0 0 0 1px rgba(255,255,255,.15) inset}
+}
+@keyframes installBounce{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-3px)}
+}
+
+/* Tooltip de instrucciones para iOS */
+.install-tip{
+  position:fixed;
+  top:70px;
+  right:14px;
+  z-index:9999;
+  max-width:290px;
+  background:linear-gradient(160deg, #1c1c1c, #101010);
+  border:1px solid rgba(201,162,39,.5);
+  border-radius:14px;
+  padding:14px 16px;
+  font-size:.78rem;
+  color:#ddd;
+  line-height:1.55;
+  box-shadow:0 20px 50px rgba(0,0,0,.7);
+  display:none;
+  animation:tipIn .35s cubic-bezier(.2,.8,.3,1.4);
+}
+.install-tip.show{display:block}
+.install-tip::before{
+  content:"";
+  position:absolute;
+  top:-8px;right:24px;
+  width:14px;height:14px;
+  background:linear-gradient(160deg, #1c1c1c, #101010);
+  border-left:1px solid rgba(201,162,39,.5);
+  border-top:1px solid rgba(201,162,39,.5);
+  transform:rotate(45deg);
+}
+.install-tip strong{color:var(--gold);display:block;margin-bottom:6px;font-size:.82rem}
+.install-tip ol{padding-left:20px;margin-top:4px}
+.install-tip li{margin-bottom:3px}
+.install-tip .tip-close{
+  position:absolute;
+  top:6px;right:8px;
+  width:22px;height:22px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:50%;
+  background:transparent;
+  color:#777;
+  font-size:.9rem;
+  cursor:pointer;
+}
+.install-tip .tip-close:hover{background:#2a2a2a;color:#fff}
+
+@keyframes tipIn{
+  from{opacity:0;transform:translateY(-8px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* ══════════════════════════════════════════
+   BANNER DE ACTUALIZACIÓN
+   ══════════════════════════════════════════ */
+.update-banner{
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%) translateY(150%);
+  z-index:9999;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px 18px;
+  background:linear-gradient(135deg, #1c1c1c, #101010);
+  border:2px solid var(--gold);
+  border-radius:30px;
+  color:#fff;
+  font-size:.82rem;
+  font-weight:600;
+  box-shadow:0 14px 40px rgba(0,0,0,.7), 0 0 0 1px rgba(201,162,39,.3);
+  transition:transform .4s cubic-bezier(.2,.8,.3,1.3);
+  max-width:calc(100vw - 32px);
+}
+.update-banner.show{transform:translateX(-50%) translateY(0)}
+.update-banner .ub-ico{
+  font-size:1.15rem;
+  animation:spinSlow 2s linear infinite;
+}
+@keyframes spinSlow{
+  to{transform:rotate(360deg)}
+}
+.update-banner button{
+  padding:7px 14px;
+  background:linear-gradient(135deg, var(--gold), #a8861c);
+  color:#000;
+  border-radius:20px;
+  font-size:.72rem;
+  font-weight:900;
+  letter-spacing:.5px;
+  text-transform:uppercase;
+  transition:transform .2s;
+}
+.update-banner button:hover{transform:scale(1.05)}
+
+/* ══════════════════════════════════════════
+   HERO
+   ══════════════════════════════════════════ */
+.hero{
+  position:relative;
+  text-align:center;
+  padding:36px 16px 16px;
+  background:
+    radial-gradient(ellipse at top, rgba(201,162,39,.18) 0%, transparent 60%),
+    linear-gradient(180deg, #0a0a0a 0%, var(--black) 100%);
+  overflow:hidden;
+}
+.hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background-image:repeating-linear-gradient(45deg, transparent 0 20px, rgba(201,162,39,.03) 20px 22px);
+  pointer-events:none;
+}
+.hero-inner{position:relative;z-index:1;max-width:720px;margin:0 auto}
+
+.badge{
+  display:inline-block;
+  padding:5px 14px;
+  background:rgba(201,162,39,.15);
+  border:1px solid rgba(201,162,39,.4);
+  border-radius:30px;
+  font-size:.68rem;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  color:var(--gold);
+  font-weight:600;
+  margin-bottom:14px;
+  animation:fadeInDown .6s ease;
+}
+.brand{
+  font-family:'Georgia',serif;
+  font-size:clamp(2rem, 11vw, 3.2rem);
+  font-weight:900;
+  letter-spacing:4px;
+  color:var(--white);
+  text-shadow:0 4px 20px rgba(201,162,39,.3);
+  animation:fadeInDown .7s ease;
+  line-height:1;
+}
+.brand span{color:var(--gold)}
+.tagline{
+  font-size:clamp(.85rem, 3.4vw, 1.1rem);
+  letter-spacing:2.5px;
+  text-transform:uppercase;
+  color:var(--gold);
+  font-weight:300;
+  margin-top:6px;
+  animation:fadeInDown .8s ease;
+}
+.scissors{
+  font-size:1.5rem;
+  margin:10px 0;
+  display:inline-block;
+  animation:swing 3s ease-in-out infinite;
+}
+@keyframes swing{
+  0%,100%{transform:rotate(-10deg)}
+  50%{transform:rotate(10deg)}
+}
+.slogan{
+  margin-top:14px;
+  color:#bdbdbd;
+  font-size:.9rem;
+  max-width:400px;
+  margin-left:auto;
+  margin-right:auto;
+  animation:fadeInUp .9s ease;
+}
+@keyframes fadeInDown{
+  from{opacity:0;transform:translateY(-20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes fadeInUp{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* ══════════════════════════════════════════
+   MENÚ: 2 BOTONES (quitamos el de instalar del menú)
+   ══════════════════════════════════════════ */
+.menu-section{
+  max-width:900px;
+  margin:0 auto;
+  padding:20px 12px 36px;
+  position:relative;
+}
+.menu-section::before{
+  content:"";
+  display:block;
+  width:50px;
+  height:2px;
+  background:var(--gold);
+  margin:0 auto 18px;
+  border-radius:2px;
+  opacity:.6;
+}
+.menu-section h2{
+  text-align:center;
+  font-size:clamp(1.05rem, 4.8vw, 1.5rem);
+  margin-bottom:4px;
+  color:var(--white);
+}
+.menu-section .sub{
+  text-align:center;
+  color:var(--muted);
+  font-size:.78rem;
+  margin-bottom:20px;
+}
+
+.menu-grid{
+  display:flex;
+  justify-content:center;
+  flex-wrap:nowrap;
+  gap:10px;
+  max-width:340px;
+  margin:0 auto;
+}
+
+.menu-btn{
+  position:relative;
+  flex:1 1 0;
+  min-width:0;
+  max-width:160px;
+  aspect-ratio:1 / 1;
+  background:linear-gradient(160deg, #ffffff 0%, #ececec 100%);
+  border-radius:var(--radius);
+  padding:10px 8px;
+  text-align:center;
+  color:#0d0d0d;
+  overflow:hidden;
+  transition:transform .25s cubic-bezier(.2,.8,.3,1.2), box-shadow .3s, opacity .25s;
+  box-shadow:0 6px 18px rgba(0,0,0,.35);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:2px;
+}
+.menu-btn[hidden]{display:none !important}
+
+.menu-btn:hover:not(.soon),
+.menu-btn:focus-visible:not(.soon){
+  transform:translateY(-4px);
+  box-shadow:0 12px 28px rgba(201,162,39,.35);
+  outline:none;
+}
+.menu-btn::before{
+  content:"";
+  position:absolute;
+  top:-50%;left:-50%;
+  width:200%;height:200%;
+  background:radial-gradient(circle, rgba(201,162,39,.25), transparent 60%);
+  opacity:0;
+  transition:opacity .4s;
+  pointer-events:none;
+}
+.menu-btn:hover:not(.soon)::before{opacity:1}
+
+.menu-btn .m-ico{
+  font-size:1.7rem;
+  margin-bottom:4px;
+  transition:transform .3s;
+  display:block;
+  line-height:1;
+}
+.menu-btn:hover:not(.soon) .m-ico{transform:scale(1.15) rotate(-5deg)}
+
+.menu-btn .m-title{
+  font-size:.72rem;
+  font-weight:800;
+  letter-spacing:.3px;
+  text-transform:uppercase;
+  color:#111;
+  line-height:1.15;
+  display:block;
+  padding:0 2px;
+}
+.menu-btn .m-arrow{
+  margin-top:6px;
+  font-size:.58rem;
+  color:#a8861c;
+  font-weight:700;
+  letter-spacing:.3px;
+  display:block;
+  line-height:1.2;
+}
+
+.menu-btn.gold{
+  background:linear-gradient(160deg, var(--gold) 0%, #a8861c 100%);
+  color:#000;
+  animation:pulseGold 2.5s ease-in-out infinite;
+}
+.menu-btn.gold .m-arrow{color:#000}
+.menu-btn.gold .m-ico{filter:drop-shadow(0 2px 4px rgba(0,0,0,.2))}
+
+@keyframes pulseGold{
+  0%, 100% { box-shadow: 0 6px 18px rgba(0,0,0,.35), 0 0 0 0 rgba(201,162,39,.5); }
+  50%      { box-shadow: 0 6px 18px rgba(0,0,0,.35), 0 0 0 10px rgba(201,162,39,0); }
+}
+
+.menu-btn.soon{
+  background:linear-gradient(160deg, #2a2a2a 0%, #1a1a1a 100%);
+  color:#666;
+  cursor:not-allowed;
+  opacity:.75;
+  border:1px dashed rgba(201,162,39,.3);
+  box-shadow:0 4px 12px rgba(0,0,0,.3);
+}
+.menu-btn.soon .m-title{color:#777}
+.menu-btn.soon .m-arrow{color:#555}
+.menu-btn.soon .m-ico{filter:grayscale(.7);opacity:.7}
+.menu-btn.soon:hover{transform:none;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+
+/* ══════════════════════════════════════════
+   TOAST
+   ══════════════════════════════════════════ */
+.toast{
+  position:fixed;
+  bottom:24px;
+  left:50%;
+  transform:translateX(-50%) translateY(150%);
+  background:var(--gold);
+  color:#000;
+  padding:12px 22px;
+  border-radius:30px;
+  font-weight:700;
+  font-size:.85rem;
+  box-shadow:0 10px 30px rgba(0,0,0,.5);
+  transition:transform .4s cubic-bezier(.2,.8,.3,1.2);
+  z-index:9999;
+  max-width:90vw;
+  text-align:center;
+}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.error{background:#e74c3c;color:#fff}
+
+/* ══════════════════════════════════════════
+   PITCH
+   ══════════════════════════════════════════ */
+.pitch{
+  max-width:900px;
+  margin:0 auto;
+  padding:40px 16px 30px;
+  border-top:1px solid #1a1a1a;
+}
+.pitch h2{
+  text-align:center;
+  font-size:clamp(1.15rem, 5.4vw, 1.8rem);
+  margin-bottom:6px;
+  color:var(--white);
+}
+.pitch h2 em{color:var(--gold);font-style:normal}
+.pitch-sub{
+  text-align:center;
+  color:var(--muted);
+  margin-bottom:28px;
+  font-size:.82rem;
+  max-width:400px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.benefits{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:14px;
+}
+
+.benefit{
+  position:relative;
+  background:linear-gradient(160deg, var(--gray), var(--dark));
+  border:1px solid #262626;
+  border-left:3px solid var(--gold);
+  border-radius:var(--radius);
+  padding:18px 18px 18px 16px;
+  text-align:left;
+  transition:transform .3s, border-color .3s, box-shadow .3s;
+  display:flex;
+  gap:14px;
+  align-items:flex-start;
+}
+.benefit:hover{
+  transform:translateY(-3px);
+  border-color:rgba(201,162,39,.6);
+  border-left-color:var(--gold-soft);
+  box-shadow:0 10px 26px rgba(0,0,0,.4), 0 0 0 1px rgba(201,162,39,.15);
+}
+.benefit .ico{
+  font-size:1.9rem;
+  line-height:1;
+  flex-shrink:0;
+  margin-top:2px;
+  transition:transform .3s;
+  display:inline-block;
+}
+.benefit:hover .ico{transform:scale(1.15)}
+.benefit .txt{flex:1;min-width:0}
+.benefit h3{
+  font-size:.95rem;
+  color:var(--gold);
+  margin-bottom:6px;
+  letter-spacing:.3px;
+  font-weight:800;
+}
+.benefit p{
+  font-size:.82rem;
+  color:#c0c0c0;
+  line-height:1.55;
+}
+.benefit p strong{color:var(--gold-soft);font-weight:700}
+
+/* ══════════════════════════════════════════
+   FOOTER
+   ══════════════════════════════════════════ */
+footer{
+  background:linear-gradient(180deg, var(--black), #000);
+  border-top:1px solid #1e1e1e;
+  padding:30px 16px 20px;
+  margin-top:20px;
+}
+.footer-inner{
+  max-width:900px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:22px;
+  margin-bottom:22px;
+}
+.footer-col h4{
+  font-size:.75rem;
+  color:var(--gold);
+  text-transform:uppercase;
+  letter-spacing:1.5px;
+  margin-bottom:10px;
+}
+.footer-col p,
+.footer-col a{
+  color:#bbb;
+  font-size:.78rem;
+  text-decoration:none;
+  line-height:1.8;
+  display:block;
+  transition:color .2s;
+}
+.footer-col a:hover{color:var(--gold)}
+.footer-brand{
+  font-family:'Georgia',serif;
+  font-size:1.15rem;
+  letter-spacing:2px;
+  color:#fff;
+  font-weight:900;
+  margin-bottom:6px;
+}
+.footer-brand span{color:var(--gold)}
+
+.social{
+  display:flex;
+  gap:8px;
+  margin-top:10px;
+}
+.social a{
+  width:34px;height:34px;
+  border-radius:50%;
+  background:#1a1a1a;
+  border:1px solid #2a2a2a;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:.9rem;
+  transition:all .25s;
+}
+.social a:hover{
+  background:var(--gold);
+  color:#000;
+  transform:translateY(-3px);
+}
+
+.copyright{
+  text-align:center;
+  padding-top:18px;
+  border-top:1px solid #1a1a1a;
+  font-size:.68rem;
+  color:#666;
+}
+.copyright span{color:var(--gold)}
+.copyright .ver{
+  color:#444;
+  font-size:.6rem;
+  margin-left:4px;
+}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════ */
+@media(min-width:600px){
+  .hero{padding:60px 20px 24px}
+  .brand{letter-spacing:6px}
+  .scissors{font-size:2rem;margin:14px 0}
+  .slogan{font-size:1rem;margin-top:20px}
+
+  .menu-section{padding:30px 20px 50px}
+  .menu-grid{gap:18px;max-width:420px}
+  .menu-btn{
+    padding:16px 14px;
+    border-radius:18px;
+    max-width:200px;
+  }
+  .menu-btn .m-ico{font-size:2.6rem;margin-bottom:10px}
+  .menu-btn .m-title{font-size:1rem;letter-spacing:1px;padding:0 6px}
+  .menu-btn .m-arrow{font-size:.8rem;margin-top:10px}
+
+  .benefits{grid-template-columns:repeat(2, 1fr);gap:16px}
+  .benefit{padding:22px 22px 22px 20px;gap:16px}
+  .benefit .ico{font-size:2.2rem}
+  .benefit h3{font-size:1rem;margin-bottom:8px}
+  .benefit p{font-size:.88rem;line-height:1.6}
+
+  .footer-inner{grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:28px}
+  .footer-col h4{font-size:.85rem}
+  .footer-col p, .footer-col a{font-size:.85rem}
+  .footer-brand{font-size:1.3rem;letter-spacing:3px}
+  .social a{width:38px;height:38px;font-size:1rem}
+  .copyright{font-size:.75rem}
+
+  .install-fab{
+    top:20px;
+    right:20px;
+    padding:11px 18px 11px 14px;
+    font-size:.82rem;
+  }
+}
+
+@media(max-width:360px){
+  .menu-grid{gap:6px;max-width:280px}
+  .menu-btn{padding:6px 4px;border-radius:12px;max-width:130px}
+  .menu-btn .m-ico{font-size:1.4rem;margin-bottom:2px}
+  .menu-btn .m-title{font-size:.6rem;letter-spacing:0}
+  .menu-btn .m-arrow{font-size:.48rem;margin-top:4px}
+  .benefit{padding:14px 14px 14px 12px;gap:10px}
+  .benefit .ico{font-size:1.5rem}
+  .benefit h3{font-size:.82rem}
+  .benefit p{font-size:.72rem}
+  .install-fab{top:10px;right:10px;padding:8px 12px 8px 10px;font-size:.7rem}
+  .install-fab .if-text{display:none}
+  .install-fab .if-ico{font-size:1.2rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     BOTÓN INSTALAR — ESQUINA SUPERIOR DERECHA
+     Solo aparece si la app NO está instalada
+     ══════════════════════════════════════════ -->
+<button type="button" id="btnInstalar" class="install-fab" aria-label="Instalar aplicación">
+  <span class="if-ico">📲</span>
+  <span class="if-text">Instalar App</span>
+  <span class="if-x" id="installX" role="button" aria-label="Ocultar" title="Ocultar">✕</span>
+</button>
+
+<!-- Tooltip de instrucciones iOS -->
+<div class="install-tip" id="installTip">
+  <button class="tip-close" id="tipClose" aria-label="Cerrar">✕</button>
+  <strong>Instala LA BARBER en tu iPhone</strong>
+  <ol>
+    <li>Toca el botón <b>Compartir</b> ⬆️ de Safari</li>
+    <li>Desliza y elige <b>"Añadir a pantalla de inicio"</b></li>
+    <li>Toca <b>Añadir</b> y listo ✅</li>
+  </ol>
+</div>
+
+<!-- ══════════════════════════════════════════
+     BANNER DE ACTUALIZACIÓN DISPONIBLE
+     ══════════════════════════════════════════ -->
+<div class="update-banner" id="updateBanner">
+  <span class="ub-ico">🔄</span>
+  <span>Nueva versión disponible</span>
+  <button id="btnUpdate">Actualizar</button>
+</div>
+
+<header class="hero">
+  <div class="hero-inner">
+    <span class="badge">✂ Servicio a domicilio</span>
+    <h1 class="brand">LA <span>BARBER</span></h1>
+    <p class="tagline">Barbería a Domicilio</p>
+    <span class="scissors">✂️</span>
+    <p class="slogan">
+      El estilo profesional que mereces, sin moverte de tu casa.
+      Reserva en segundos y olvídate de las filas.
+    </p>
+  </div>
+</header>
+
+<section class="menu-section" id="menu">
+  <h2>¿Qué necesitas hoy?</h2>
+  <p class="sub">Elige una opción para continuar</p>
+
+  <div class="menu-grid">
+
+    <a href="agendar.html" class="menu-btn gold" data-tipo="agendar">
+      <span class="m-ico">📅</span>
+      <span class="m-title">Agendar Servicio a Domicilio</span>
+      <span class="m-arrow">RESERVAR →</span>
+    </a>
+
+    <div class="menu-btn soon" data-tipo="productos" aria-disabled="true">
+      <span class="m-ico">🧴</span>
+      <span class="m-title">Productos</span>
+      <span class="m-arrow">PRÓXIMAMENTE</span>
+    </div>
+
+  </div>
+</section>
+
+<section class="pitch">
+  <h2>¿Por qué <em>LA BARBER</em> a domicilio?</h2>
+  <p class="pitch-sub">6 razones por las que nuestro servicio cambia tu forma de cortarte el cabello</p>
+
+  <div class="benefits">
+
+    <div class="benefit">
+      <span class="ico">⏱️</span>
+      <div class="txt">
+        <h3>Recupera tu tiempo</h3>
+        <p>Una visita a la barbería tradicional te cuesta <strong>2 o 3 horas</strong>: desplazarte, esperar turno, cortarte y volver. Con LA BARBER todo eso se reduce a <strong>45 minutos en tu casa</strong>. Ese tiempo libre es para ti, tu familia o tu trabajo.</p>
+      </div>
+    </div>
+
+    <div class="benefit">
+      <span class="ico">🏠</span>
+      <div class="txt">
+        <h3>Comodidad total, sin estrés</h3>
+        <p>Sin tráfico, sin parqueadero, sin salas de espera llenas de gente. <strong>Nosotros llegamos a ti</strong> con todo el equipo profesional: máquinas, tijeras, capa, toallas y productos. Tú solo eliges la silla y disfrutas.</p>
+      </div>
+    </div>
+
+    <div class="benefit">
+      <span class="ico">👨‍👩‍👧</span>
+      <div class="txt">
+        <h3>Perfecto para niños y adultos mayores</h3>
+        <p>Cortarle el cabello a un niño pequeño en un lugar extraño suele ser una batalla. <strong>En casa, con sus juguetes y su espacio</strong>, todo fluye. Ideal también para adultos mayores o personas con movilidad reducida que no pueden desplazarse fácilmente.</p>
+      </div>
+    </div>
+
+    <div class="benefit">
+      <span class="ico">💈</span>
+      <div class="txt">
+        <h3>Calidad de barbería premium</h3>
+        <p>No es un "corte exprés". Trabajamos con <strong>barberos con experiencia real</strong>, mismas técnicas y acabados que en las mejores barberías de la ciudad. Productos profesionales y asesoría de estilo incluida en cada servicio.</p>
+      </div>
+    </div>
+
+    <div class="benefit">
+      <span class="ico">📅</span>
+      <div class="txt">
+        <h3>Agenda en 30 segundos</h3>
+        <p>Elige el día, la hora y el tipo de corte. Recibes confirmación al instante. Sin llamadas, sin esperar respuesta por WhatsApp, sin "¿cuándo tienes disponible?". <strong>Tú decides, el sistema confirma</strong>.</p>
+      </div>
+    </div>
+
+    <div class="benefit">
+      <span class="ico">💳</span>
+      <div class="txt">
+        <h3>Precio justo, pago seguro</h3>
+        <p>Un solo precio claro: <strong>$10.000 domicilio</strong>, tanto para adulto como para niño. Sin sorpresas, sin cargos extra por desplazamiento, sin propinas obligatorias. Pagas <strong>cuando recibes el servicio</strong>, nada por adelantado.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+
+    <div class="footer-col">
+      <div class="footer-brand">LA <span>BARBER</span></div>
+      <p>Barbería profesional a domicilio. Tu estilo, sin moverte de casa.</p>
+      <div class="social">
+        <a href="#" title="WhatsApp" aria-label="WhatsApp">💬</a>
+        <a href="#" title="Instagram" aria-label="Instagram">📸</a>
+        <a href="#" title="Facebook" aria-label="Facebook">👍</a>
+        <a href="#" title="TikTok" aria-label="TikTok">🎵</a>
+      </div>
+    </div>
+
+    <div class="footer-col">
+      <h4>Contacto</h4>
+      <a href="tel:+573116516861">📞 +57 311 651 6861</a>
+      <a href="https://wa.me/573116516861" target="_blank" rel="noopener">💬 WhatsApp</a>
+      <a href="labarberstudio@gmail.com">✉️ labarberstudio@gmail.com</a>
+    </div>
+
+    <div class="footer-col">
+      <h4>Horario</h4>
+      <p>Lun – Vie · 6:00am – 6:00pm</p>
+      <p>Sábado · 6:00am – 6:00pm</p>
+      <p>Domingo · hasta las 12 pm</p>
+    </div>
+
+    <div class="footer-col">
+      <h4>Cobertura</h4>
+      <p>Municipio del Tambo - Nariño</p>
+      <p>Zona urbana · rural (alrededores)</p>
+      <p style="color:var(--gold);font-size:.72rem;margin-top:6px">
+        Consulta tu zona por WhatsApp
+      </p>
+    </div>
+
+  </div>
+
+  <div class="copyright">
+    © <span id="year"></span> LA BARBER · Todos los derechos reservados · Hecho con ✂️
+    <span class="ver" id="appVersion"></span>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════
+   AÑO DINÁMICO
+   ═══════════════════════════════════════════ */
+document.getElementById('year').textContent = new Date().getFullYear();
+
+/* ═══════════════════════════════════════════
+   📲 BOTÓN DE INSTALACIÓN — ESQUINA SUPERIOR
+   ═══════════════════════════════════════════ */
+let deferredPrompt = null;
+const btnInstalar = document.getElementById('btnInstalar');
+const installX = document.getElementById('installX');
+const installTip = document.getElementById('installTip');
+const tipClose = document.getElementById('tipClose');
+
+/* Detectar si la app ya está instalada */
+function estaInstalada() {
+  return window.matchMedia('(display-mode: standalone)').matches
+      || window.navigator.standalone === true
+      || document.referrer.includes('android-app://');
+}
+
+/* Ocultar botón si el usuario lo descartó antes (por sesión) */
+const ocultadoPorUsuario = sessionStorage.getItem('lb_install_hidden') === '1';
+
+/* Mostrar botón cuando el navegador ofrece instalar (Android/Chrome) */
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+
+  if (!estaInstalada() && !ocultadoPorUsuario) {
+    btnInstalar.classList.add('show');
+  }
+});
+
+/* Click en el botón principal */
+btnInstalar.addEventListener('click', async (e) => {
+  // Si hizo clic en la "X", solo cerrar
+  if (e.target === installX) {
+    btnInstalar.classList.remove('show');
+    installTip.classList.remove('show');
+    sessionStorage.setItem('lb_install_hidden', '1');
+    return;
+  }
+
+  // Si está instalado, no hacer nada
+  if (estaInstalada()) {
+    btnInstalar.classList.remove('show');
+    return;
+  }
+
+  // Si tenemos el prompt, dispararlo
+  if (deferredPrompt) {
+    btnInstalar.style.transform = 'scale(.94)';
+    deferredPrompt.prompt();
+
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`👆 Respuesta instalación: ${outcome}`);
+
+    if (outcome === 'accepted') {
+      toast('🎉 ¡Gracias por instalar LA BARBER!');
+      btnInstalar.classList.remove('show');
+      sessionStorage.setItem('lb_install_hidden', '1');
+    } else {
+      toast('Instalación cancelada');
+    }
+
+    deferredPrompt = null;
+    btnInstalar.style.transform = '';
+    return;
+  }
+
+  // Si estamos en iOS Safari (no soporta beforeinstallprompt)
+  const esIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  const esSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+  if (esIOS && esSafari) {
+    installTip.classList.toggle('show');
+    return;
+  }
+
+  // Otros navegadores
+  toast('Abre el menú del navegador y elige "Añadir a pantalla de inicio"', true);
+});
+
+/* Cerrar tooltip iOS */
+if (tipClose) {
+  tipClose.addEventListener('click', (e) => {
+    e.stopPropagation();
+    installTip.classList.remove('show');
+  });
+}
+
+/* Cerrar tooltip al hacer clic fuera */
+document.addEventListener('click', (e) => {
+  if (!installTip.contains(e.target) && !btnInstalar.contains(e.target)) {
+    installTip.classList.remove('show');
+  }
+});
+
+/* Detectar cuando se instala */
+window.addEventListener('appinstalled', () => {
+  console.log('✅ App instalada correctamente');
+  btnInstalar.classList.remove('show');
+  installTip.classList.remove('show');
+  deferredPrompt = null;
+  sessionStorage.setItem('lb_install_hidden', '1');
+  toast('🎉 ¡App instalada! Búscala en tu pantalla de inicio');
+});
+
+/* Si ya está instalada al cargar → ocultar */
+if (estaInstalada()) {
+  btnInstalar.classList.remove('show');
+}
+
+/* Soporte iOS: mostrar botón después de 2s si es iOS Safari y no está instalado */
+setTimeout(() => {
+  const esIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  const esSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+  if (esIOS && esSafari && !estaInstalada() && !ocultadoPorUsuario) {
+    btnInstalar.classList.add('show');
+  }
+}, 2000);
+
+/* ═══════════════════════════════════════════
+   🔄 SERVICE WORKER + AUTO-ACTUALIZACIÓN
+   ═══════════════════════════════════════════ */
+const updateBanner = document.getElementById('updateBanner');
+const btnUpdate = document.getElementById('btnUpdate');
+let refreshing = false;
+let swRegistration = null;
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js', { scope: './' })
+      .then(reg => {
+        swRegistration = reg;
+        console.log('✅ SW registrado. Scope:', reg.scope);
+
+        // Mostrar versión actual en el footer
+        if (reg.active) {
+          reg.active.postMessage('GET_VERSION');
+        }
+
+        // Verificar actualizaciones cada 60 segundos
+        setInterval(() => {
+          reg.update().catch(err => console.warn('Error en update:', err));
+        }, 60000);
+
+        // Detectar nueva versión mientras la página está abierta
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          console.log('🆕 Nueva versión detectada, instalando…');
+
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              console.log('✅ Nueva versión instalada, lista para activar');
+              updateBanner.classList.add('show');
+            }
+          });
+        });
+      })
+      .catch(err => console.warn('❌ SW error:', err));
+
+    // Recargar cuando el SW activo cambie
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (refreshing) return;
+      refreshing = true;
+      console.log('🔄 Recargando por actualización de SW…');
+      window.location.reload();
+    });
+
+    // Escuchar mensajes del SW
+    navigator.serviceWorker.addEventListener('message', (event) => {
+      if (event.data && event.data.type === 'SW_ACTIVATED') {
+        console.log(`📦 SW activo: ${event.data.version}`);
+        const verEl = document.getElementById('appVersion');
+        if (verEl) verEl.textContent = `· ${event.data.version}`;
+      }
+    });
+  });
+}
+
+/* Click en "Actualizar" del banner */
+btnUpdate.addEventListener('click', () => {
+  updateBanner.classList.remove('show');
+
+  if (swRegistration && swRegistration.waiting) {
+    // Enviar mensaje al SW en espera para que tome control
+    swRegistration.waiting.postMessage('SKIP_WAITING');
+  } else {
+    // Si no hay SW en espera, recargar directamente
+    window.location.reload();
+  }
+});
+
+/* ═══════════════════════════════════════════
+   TOAST
+   ═══════════════════════════════════════════ */
+let toastTimer;
+function toast(msg, error = false) {
+  const t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.className = 'toast show' + (error ? ' error' : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.className = 'toast', 3200);
+}
+</script>
+
+</body>
+</html>

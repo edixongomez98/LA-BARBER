@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta name="theme-color" content="#c9a227">
+<title>Panel Admin · LA BARBER</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👑</text></svg>">
+<style>
+:root{
+  --gold:#c9a227; --gold-soft:#e6c869; --gold-dark:#a8861c;
+  --black:#0d0d0d; --dark:#161616; --gray:#1f1f1f;
+  --white:#f5f5f5; --muted:#8a8a8a; --line:#262626;
+  --danger:#e74c3c; --success:#2ecc71; --warning:#f39c12; --info:#3498db;
+  --radius:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  background:var(--black);color:var(--white);
+  min-height:100vh;overflow-x:hidden;line-height:1.5;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+img{max-width:100%;display:block}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+a{text-decoration:none;color:inherit}
+input,textarea,select{font-family:inherit}
+
+.top-bar{
+  position:sticky;top:0;z-index:100;
+  display:grid;grid-template-columns:44px 1fr 44px;
+  align-items:center;padding:12px 14px;
+  background:rgba(13,13,13,.92);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.back-btn{
+  width:40px;height:40px;display:flex;align-items:center;justify-content:center;
+  border-radius:50%;background:#1a1a1a;border:1px solid #2a2a2a;
+  color:var(--gold);transition:all .25s;
+}
+.back-btn:hover{background:var(--gold);color:#000;transform:scale(1.05)}
+.top-title{text-align:center;line-height:1.15}
+.top-brand{
+  display:block;font-family:'Georgia',serif;font-size:.95rem;
+  font-weight:900;letter-spacing:2px;color:var(--white);
+}
+.top-brand em{color:var(--gold);font-style:normal}
+.top-sub{
+  display:block;font-size:.62rem;color:var(--gold);
+  letter-spacing:1.5px;text-transform:uppercase;margin-top:1px;font-weight:700;
+}
+.top-spacer{width:40px}
+
+.login-screen{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:20px;
+  background:
+    radial-gradient(ellipse at top, rgba(201,162,39,.18) 0%, transparent 60%),
+    linear-gradient(180deg, #0a0a0a 0%, var(--black) 100%);
+}
+.login-card{
+  width:100%;max-width:380px;
+  background:linear-gradient(160deg, #1c1c1c, #101010);
+  border:1px solid rgba(201,162,39,.35);border-radius:20px;
+  padding:36px 26px 30px;text-align:center;
+  box-shadow:0 20px 60px rgba(0,0,0,.7);
+}
+.login-ico{font-size:3rem;margin-bottom:14px;display:inline-block;animation:swing 3s ease-in-out infinite}
+@keyframes swing{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+.login-card h1{font-family:'Georgia',serif;font-size:1.5rem;color:var(--gold);margin-bottom:6px}
+.login-card p{color:var(--muted);font-size:.82rem;margin-bottom:24px}
+.login-input{
+  width:100%;padding:14px 16px;background:#0a0a0a;
+  border:2px solid #2a2a2a;border-radius:12px;color:#fff;
+  font-size:1rem;text-align:center;letter-spacing:3px;margin-bottom:14px;
+}
+.login-input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 4px rgba(201,162,39,.12)}
+.btn-login{
+  width:100%;padding:15px;
+  background:linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color:#000;border-radius:12px;font-size:.95rem;font-weight:900;
+  letter-spacing:1px;text-transform:uppercase;transition:all .25s;
+  box-shadow:0 8px 22px rgba(201,162,39,.35);
+}
+.btn-login:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 12px 28px rgba(201,162,39,.55)}
+.btn-login:disabled{opacity:.5;cursor:not-allowed}
+.login-error{color:var(--danger);font-size:.78rem;margin-top:10px;min-height:18px}
+
+.panel{display:none}
+.panel.active{display:block}
+
+.hero-mini{
+  text-align:center;padding:22px 20px 12px;
+  background:
+    radial-gradient(ellipse at top, rgba(201,162,39,.14) 0%, transparent 65%),
+    linear-gradient(180deg, #0a0a0a 0%, var(--black) 100%);
+}
+.hero-mini h1{font-size:clamp(1.3rem, 5.5vw, 1.7rem);font-weight:800;margin-bottom:4px}
+.hero-mini p{color:var(--muted);font-size:.8rem;max-width:440px;margin:0 auto}
+
+.stats-wrap{
+  max-width:1100px;margin:0 auto;padding:14px 14px 0;
+  display:grid;grid-template-columns:repeat(4, 1fr);gap:8px;
+}
+.stat-card{
+  background:linear-gradient(160deg, var(--gray), var(--dark));
+  border:1px solid #262626;border-radius:12px;padding:12px 6px;
+  text-align:center;transition:all .25s;
+}
+.stat-card:hover{border-color:rgba(201,162,39,.5);transform:translateY(-2px)}
+.stat-card .s-num{display:block;font-size:1.4rem;font-weight:900;color:var(--gold);line-height:1}
+.stat-card .s-lbl{display:block;font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;font-weight:600}
+.stat-card.hoy .s-num{color:var(--success)}
+.stat-card.pend .s-num{color:var(--warning)}
+.stat-card.comp .s-num{color:var(--info)}
+.stat-card.canc .s-num{color:var(--danger)}
+
+.section-wrap{max-width:1100px;margin:0 auto;padding:14px}
+.section-head{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.section-head h2{font-size:1rem;font-weight:700;display:flex;align-items:center;gap:8px}
+.section-head .num{
+  width:24px;height:24px;
+  background:linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color:#000;border-radius:50%;display:inline-flex;
+  align-items:center;justify-content:center;font-size:.75rem;font-weight:900;
+}
+.section-head .contador{
+  margin-left:auto;font-size:.7rem;color:var(--gold);
+  background:rgba(201,162,39,.1);padding:4px 10px;border-radius:20px;
+  font-weight:700;letter-spacing:.5px;
+}
+.section-head .btn-mini{
+  padding:6px 12px;background:#1a1a1a;border:1px solid #2a2a2a;
+  color:var(--gold);font-size:.7rem;font-weight:700;border-radius:20px;
+  transition:all .2s;cursor:pointer;
+}
+.section-head .btn-mini:hover{background:rgba(201,162,39,.1);border-color:var(--gold)}
+
+.help-box{
+  background:rgba(201,162,39,.06);border:1px dashed rgba(201,162,39,.3);
+  border-radius:12px;padding:12px 14px;margin-bottom:14px;
+  font-size:.75rem;color:#bbb;line-height:1.6;
+  display:flex;gap:10px;align-items:flex-start;
+}
+.help-box .hb-ico{font-size:1.1rem;flex-shrink:0}
+.help-box strong{color:var(--gold)}
+
+.debug-info{
+  background:rgba(52,152,219,.08);
+  border:1px dashed rgba(52,152,219,.4);
+  border-radius:12px;padding:12px 14px;margin-bottom:14px;
+  font-size:.72rem;color:#a8d4f0;line-height:1.7;
+  display:none;word-break:break-word;
+}
+.debug-info.show{display:block}
+.debug-info strong{color:#fff}
+.debug-info code{
+  background:#000;padding:2px 6px;border-radius:4px;
+  color:var(--gold);font-family:monospace;font-size:.7rem;
+}
+
+.cal-wrap{
+  background:linear-gradient(160deg, #1a1a1a, #101010);
+  border:1px solid var(--line);border-radius:var(--radius);
+  padding:14px 12px 16px;
+}
+.cal-range{
+  text-align:center;font-size:.72rem;color:var(--gold-soft);
+  letter-spacing:1px;margin-bottom:12px;text-transform:uppercase;font-weight:600;
+}
+.semana-titulo{display:flex;align-items:center;gap:8px;margin:12px 0 8px;padding-left:2px}
+.semana-titulo::before{content:"";width:6px;height:6px;background:var(--gold);border-radius:50%}
+.semana-titulo span{
+  font-size:.68rem;color:var(--muted);text-transform:uppercase;
+  letter-spacing:2px;font-weight:600;
+}
+.dias-grid{display:grid;grid-template-columns:repeat(7, 1fr);gap:6px}
+
+.dia-cell{
+  aspect-ratio:1/1;background:#f5f5f5;border:2px solid transparent;
+  border-radius:10px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;cursor:pointer;
+  color:#111;transition:all .25s cubic-bezier(.2,.8,.3,1.2);
+  padding:2px;position:relative;overflow:hidden;
+}
+.dia-cell .d-num{font-size:1rem;font-weight:800;line-height:1}
+.dia-cell .d-dow{
+  font-size:.55rem;text-transform:uppercase;letter-spacing:.5px;
+  margin-top:2px;opacity:.7;font-weight:600;
+}
+.dia-cell .d-count{
+  position:absolute;top:3px;right:3px;background:var(--gold);
+  color:#000;font-size:.55rem;font-weight:900;
+  width:16px;height:16px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 6px rgba(0,0,0,.3);
+}
+.dia-cell:hover:not(.bloqueado){transform:translateY(-3px);box-shadow:0 8px 18px rgba(201,162,39,.3)}
+.dia-cell.hoy{border-color:var(--gold);color:#111}
+.dia-cell.hoy::after{
+  content:"HOY";position:absolute;bottom:3px;
+  font-size:.45rem;color:var(--gold-dark);font-weight:900;letter-spacing:.5px;
+}
+.dia-cell.selected{
+  background:linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color:#000;border-color:#fff;
+  box-shadow:0 10px 24px rgba(201,162,39,.55);transform:scale(1.05);
+}
+.dia-cell.selected .d-num{color:#000}
+.dia-cell.selected .d-count{background:#000;color:var(--gold)}
+.dia-cell.selected.hoy::after{color:#000}
+
+.dia-cell.bloqueado{
+  background:repeating-linear-gradient(45deg, #151515 0 6px, #0a0a0a 6px 12px);
+  color:#555;cursor:pointer;border-color:#2a2a2a;
+}
+.dia-cell.bloqueado .d-num{color:#666}
+.dia-cell.bloqueado .d-dow{opacity:.4}
+.dia-cell.bloqueado::before{
+  content:"🔒";position:absolute;top:4px;left:5px;
+  font-size:.7rem;opacity:.7;
+}
+.dia-cell.bloqueado.selected{
+  transform:scale(1.05);border-color:var(--danger);
+  box-shadow:0 10px 24px rgba(231,76,60,.35);
+}
+
+.horas-wrap{
+  background:linear-gradient(160deg, #1a1a1a, #101010);
+  border:1px solid var(--line);border-radius:var(--radius);
+  padding:14px;animation:slideDown .35s cubic-bezier(.2,.8,.3,1.2);
+}
+.horas-wrap[hidden]{display:none}
+@keyframes slideDown{
+  from{opacity:0;transform:translateY(-12px) scaleY(.95);transform-origin:top}
+  to{opacity:1;transform:translateY(0) scaleY(1)}
+}
+
+.horas-titulo{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:14px;padding:0 2px 10px;
+  flex-wrap:wrap;gap:6px;border-bottom:1px dashed #262626;
+}
+.horas-titulo .ht-left{display:flex;flex-direction:column;gap:2px}
+.horas-titulo .ht-left span{
+  font-size:.65rem;color:var(--muted);text-transform:uppercase;
+  letter-spacing:1.5px;font-weight:600;
+}
+.horas-titulo .ht-left strong{font-size:.95rem;color:var(--gold);font-weight:800}
+
+.btn-bloquear-dia{
+  padding:7px 14px;background:#1a1a1a;border:2px solid #2a2a2a;
+  color:#bbb;font-size:.72rem;font-weight:800;letter-spacing:.5px;
+  border-radius:20px;text-transform:uppercase;
+  transition:all .25s;display:inline-flex;align-items:center;
+  gap:6px;white-space:nowrap;
+}
+.btn-bloquear-dia:hover{
+  border-color:var(--gold);color:var(--gold);background:rgba(201,162,39,.08);
+}
+.btn-bloquear-dia.bloqueado{
+  background:rgba(231,76,60,.1);border-color:var(--danger);color:var(--danger);
+}
+.btn-bloquear-dia.bloqueado:hover{background:rgba(231,76,60,.2)}
+
+.horas-grid{display:grid;grid-template-columns:repeat(2, 1fr);gap:8px}
+@media(min-width:420px){.horas-grid{grid-template-columns:repeat(3, 1fr)}}
+@media(min-width:600px){.horas-grid{grid-template-columns:repeat(4, 1fr)}}
+
+.hora-cell{
+  padding:14px 6px;background:#f5f5f5;color:#111;
+  border:2px solid transparent;border-radius:10px;
+  font-size:.9rem;font-weight:800;text-align:center;cursor:pointer;
+  transition:all .25s cubic-bezier(.2,.8,.3,1.2);
+  position:relative;letter-spacing:.3px;
+  min-height:56px;display:flex;align-items:center;justify-content:center;
+}
+.hora-cell:hover:not(.busy){
+  transform:translateY(-3px);box-shadow:0 8px 18px rgba(201,162,39,.35);
+  border-color:var(--gold);color:var(--gold-dark);
+}
+.hora-cell.busy{
+  background:linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color:#000;padding:8px 6px;min-height:64px;
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:2px;
+}
+.hora-cell.busy .hc-hora{font-size:.78rem;font-weight:800;letter-spacing:.3px}
+.hora-cell.busy .hc-nombre{
+  font-size:.68rem;font-weight:700;line-height:1.1;
+  max-width:100%;overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap;opacity:.85;
+}
+.hora-cell.busy::after{
+  content:"✕";position:absolute;top:4px;right:6px;
+  font-size:.6rem;opacity:.6;font-weight:900;
+}
+.hora-cell.busy:hover{transform:translateY(-3px);box-shadow:0 10px 22px rgba(201,162,39,.5)}
+.hora-cell.bloqueado{
+  background:repeating-linear-gradient(45deg, #1a1a1a 0 6px, #0f0f0f 6px 12px);
+  color:#555;cursor:not-allowed;border-color:#2a2a2a;
+}
+.hora-cell.bloqueado::before{
+  content:"🔒";position:absolute;top:4px;left:6px;
+  font-size:.6rem;opacity:.6;
+}
+.hora-cell.bloqueado:hover{
+  transform:none;box-shadow:none;border-color:#2a2a2a;color:#555;
+}
+
+.spinner{
+  width:22px;height:22px;border:3px solid #333;
+  border-top-color:var(--gold);border-radius:50%;
+  animation:spin .8s linear infinite;margin:0 auto 10px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.88);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  z-index:1000;display:flex;align-items:center;justify-content:center;
+  padding:20px;animation:fadeIn .25s ease;overflow-y:auto;
+}
+.modal-overlay[hidden]{display:none}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+.modal-card{
+  width:100%;max-width:420px;
+  background:linear-gradient(160deg, #1c1c1c, #101010);
+  border:1px solid rgba(201,162,39,.4);border-radius:20px;
+  padding:26px 22px 22px;
+  box-shadow:0 20px 60px rgba(0,0,0,.7);
+  animation:popIn .35s cubic-bezier(.2,.8,.3,1.4);
+  margin:auto;
+}
+@keyframes popIn{
+  from{opacity:0;transform:scale(.92) translateY(10px)}
+  to{opacity:1;transform:scale(1) translateY(0)}
+}
+
+.modal-head{
+  display:flex;justify-content:space-between;
+  align-items:flex-start;margin-bottom:16px;gap:12px;
+}
+.modal-head h3{font-size:1.1rem;font-weight:800;color:var(--gold);line-height:1.3}
+.modal-head .close-x{
+  width:34px;height:34px;border-radius:50%;
+  background:#1a1a1a;border:1px solid #2a2a2a;
+  color:#999;font-size:1rem;display:flex;
+  align-items:center;justify-content:center;flex-shrink:0;
+  transition:all .2s;
+}
+.modal-head .close-x:hover{background:var(--danger);color:#fff;transform:rotate(90deg)}
+
+.modal-sub{
+  color:#8a8a8a;font-size:.78rem;margin-bottom:16px;
+  line-height:1.5;text-align:left;
+}
+
+.modal-info{
+  background:rgba(201,162,39,.06);
+  border:1px dashed rgba(201,162,39,.3);
+  border-radius:12px;padding:14px 16px;margin-bottom:16px;
+  display:grid;gap:10px;
+}
+.info-row{display:flex;gap:10px;align-items:flex-start;font-size:.85rem}
+.info-row .i-ico{font-size:1rem;flex-shrink:0;width:20px;text-align:center}
+.info-row .i-lbl{
+  color:var(--muted);font-size:.68rem;text-transform:uppercase;
+  letter-spacing:1px;font-weight:700;margin-bottom:2px;
+}
+.info-row .i-val{color:var(--white);font-size:.88rem;word-break:break-word}
+.info-row .i-val.gold{color:var(--gold);font-weight:700}
+.info-row .i-val a{color:var(--gold);text-decoration:underline}
+
+.gps-actions{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.gps-btn{
+  padding:8px 14px;
+  background:linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color:#000;border-radius:10px;font-size:.72rem;
+  font-weight:800;letter-spacing:.3px;
+  display:inline-flex;align-items:center;gap:6px;
+  transition:all .25s;text-transform:uppercase;
+}
+.gps-btn:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(201,162,39,.4)}
+.gps-btn.sec{background:#1a1a1a;color:var(--gold);border:1px solid rgba(201,162,39,.4)}
+
+.form-grid{display:grid;gap:12px}
+.field{position:relative}
+.field label{
+  display:block;font-size:.68rem;color:var(--gold-soft);
+  margin-bottom:5px;letter-spacing:1px;text-transform:uppercase;font-weight:700;
+}
+.input-wrap{position:relative;display:flex;align-items:center}
+.input-ico{
+  position:absolute;left:12px;font-size:.95rem;
+  pointer-events:none;opacity:.85;
+}
+.input-wrap input{
+  width:100%;padding:12px 12px 12px 38px;
+  background:#141414;border:2px solid #2a2a2a;border-radius:10px;
+  color:#fff;font-size:.92rem;
+}
+.input-wrap input:focus{
+  outline:none;border-color:var(--gold);background:#0a0a0a;
+  box-shadow:0 0 0 4px rgba(201,162,39,.12);
+}
+
+.modal-actions{display:grid;gap:8px}
+.modal-actions .row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.btn-action{
+  padding:13px 14px;border-radius:12px;font-size:.82rem;
+  font-weight:800;letter-spacing:.5px;text-transform:uppercase;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all .25s;border:2px solid transparent;
+}
+.btn-action.gps{
+  background:linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color:#000;
+}
+.btn-action.gps:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(201,162,39,.4)}
+.btn-action.gps:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-action.ghost{background:#1a1a1a;color:#bbb;border-color:#2a2a2a}
+.btn-action.ghost:hover{background:#222;color:#fff;border-color:#3a3a3a}
+.btn-action.danger{
+  background:linear-gradient(135deg, #e74c3c, #b93a2c);
+  color:#fff;
+}
+.btn-action.danger:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(231,76,60,.4)}
+
+.toast{
+  position:fixed;bottom:24px;left:50%;
+  transform:translateX(-50%) translateY(150%);
+  background:var(--gold);color:#000;
+  padding:14px 24px;border-radius:30px;
+  font-weight:700;font-size:.85rem;
+  box-shadow:0 10px 30px rgba(0,0,0,.5);
+  transition:transform .4s cubic-bezier(.2,.8,.3,1.2);
+  z-index:9999;max-width:90vw;text-align:center;
+}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.error{background:var(--danger);color:#fff}
+.toast.success{background:var(--success);color:#fff}
+
+@media(max-width:480px){
+  .stats-wrap{grid-template-columns:repeat(2, 1fr)}
+  .dias-grid{gap:4px}
+  .dia-cell{border-radius:8px}
+  .dia-cell .d-num{font-size:.9rem}
+  .dia-cell .d-dow{font-size:.5rem}
+  .modal-actions .row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <span class="login-ico">👑</span>
+    <h1>LA BARBER</h1>
+    <p>Panel de Administración</p>
+    <input type="password" id="passInput" class="login-input" placeholder="Contraseña"
+           autocomplete="current-password" onkeydown="if(event.key==='Enter') login()">
+    <button class="btn-login" id="btnLogin" onclick="login()">Entrar</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<div class="panel" id="panel">
+  <header class="top-bar">
+    <button class="back-btn" onclick="logout()" title="Cerrar sesión">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
+      </svg>
+    </button>
+    <div class="top-title">
+      <span class="top-brand">LA <em>BARBER</em></span>
+      <span class="top-sub">Panel Admin</span>
+    </div>
+    <div class="top-spacer"></div>
+  </header>
+
+  <section class="hero-mini">
+    <h1>Control de Horarios</h1>
+    <p>Selecciona un día para ver sus horarios, marca o libera citas</p>
+  </section>
+
+  <div class="stats-wrap">
+    <div class="stat-card hoy"><span class="s-num" id="statHoy">0</span><span class="s-lbl">Hoy</span></div>
+    <div class="stat-card pend"><span class="s-num" id="statPend">0</span><span class="s-lbl">Pendientes</span></div>
+    <div class="stat-card comp"><span class="s-num" id="statComp">0</span><span class="s-lbl">Completadas</span></div>
+    <div class="stat-card canc"><span class="s-num" id="statCanc">0</span><span class="s-lbl">Canceladas</span></div>
+  </div>
+
+  <div class="section-wrap">
+    <div class="help-box">
+      <span class="hb-ico">💡</span>
+      <div>
+        <strong>Hora libre</strong> → click para marcarla como ocupada.<br>
+        <strong>Hora ocupada</strong> → click para ver datos o liberar.<br>
+        <strong>Día bloqueado</strong> 🔒 → no se puede agendar en él.
+      </div>
+    </div>
+
+    <div class="debug-info" id="debugInfo"></div>
+  </div>
+
+  <section class="section-wrap">
+    <div class="section-head">
+      <h2><span class="num">1</span> Elige un día</h2>
+      <button class="btn-mini" onclick="verDiagnostico()">🔍 Diagnóstico</button>
+      <button class="btn-mini" onclick="cargarTodo()">🔄 Actualizar</button>
+    </div>
+    <div class="cal-wrap">
+      <div class="cal-range" id="calRange">Cargando…</div>
+      <div id="calSemanas"></div>
+    </div>
+  </section>
+
+  <section class="section-wrap" id="seccionHoras" hidden>
+    <div class="section-head">
+      <h2><span class="num">2</span> Horarios</h2>
+      <span class="contador" id="contadorDia">0 ocupados</span>
+    </div>
+    <div class="horas-wrap" id="horasWrap"></div>
+  </section>
+</div>
+
+<div class="modal-overlay" id="modalMarcar" hidden onclick="if(event.target===this)cerrarModalMarcar()">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <h3 id="mmTitulo">Marcar como ocupado</h3>
+      <button class="close-x" onclick="cerrarModalMarcar()">✕</button>
+    </div>
+    <p class="modal-sub" id="mmSub">Se marcará este horario como ocupado.</p>
+    <form class="form-grid" onsubmit="event.preventDefault();guardarMarcar()">
+      <div class="field">
+        <label for="mNombre">Nombre del cliente</label>
+        <div class="input-wrap">
+          <span class="input-ico">👤</span>
+          <input type="text" id="mNombre" placeholder="Ej: Juan Pérez" required minlength="2" autocomplete="off">
+        </div>
+      </div>
+      <div class="field">
+        <label for="mCelular">Celular (opcional)</label>
+        <div class="input-wrap">
+          <span class="input-ico">📱</span>
+          <input type="tel" id="mCelular" inputmode="numeric" maxlength="10"
+                 placeholder="3001234567"
+                 oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)">
+        </div>
+      </div>
+      <div class="field">
+        <label for="mNotas">Nota (ubicación)</label>
+        <div class="input-wrap">
+          <span class="input-ico">📝</span>
+          <input type="text" id="mNotas" placeholder="Ej: ubicacion" maxlength="80">
+        </div>
+      </div>
+      <div class="modal-actions" style="margin-top:6px">
+        <button type="submit" class="btn-action gps" id="btnMarcar">🔒 Marcar como ocupado</button>
+        <button type="button" class="btn-action ghost" onclick="cerrarModalMarcar()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalOcupado" hidden onclick="if(event.target===this)cerrarModalOcupado()">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <h3 id="moNombre">Cita</h3>
+      <button class="close-x" onclick="cerrarModalOcupado()">✕</button>
+    </div>
+    <div class="modal-info" id="moInfo"></div>
+    <div class="modal-actions">
+      <button class="btn-action danger" onclick="liberarHora()">🔓 Liberar esta hora</button>
+      <button class="btn-action ghost" onclick="cerrarModalOcupado()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="config.js"></script>
+<script>
+/* ═══════════════════════════════════════════
+   CONFIG
+   ═══════════════════════════════════════════ */
+const API_URL = window.API_URL || '';
+const HORAS_DISPONIBLES = Array.isArray(window.HORAS_DISPONIBLES)
+  ? window.HORAS_DISPONIBLES : [];
+const API_OK = API_URL && !API_URL.includes('TU_ID');
+
+console.log('%c👑 LA BARBER · Admin v1.3.0', 'color:#c9a227;font-weight:bold;font-size:14px');
+console.log('📄 config.js cargado:', !!window.API_URL);
+console.log('🌐 API_URL:', API_URL || '(vacío)');
+console.log('⏰ Horas desde config.js:', HORAS_DISPONIBLES);
+console.log('✅ API_OK:', API_OK);
+
+if (HORAS_DISPONIBLES.length === 0) {
+  document.addEventListener('DOMContentLoaded', () => {
+    document.body.innerHTML = `
+      <div style="padding:60px 24px;text-align:center;font-family:sans-serif;color:#fff;background:#0d0d0d;min-height:100vh">
+        <div style="font-size:3rem;margin-bottom:16px">⚠️</div>
+        <h2 style="color:#e74c3c;margin-bottom:16px">Error de configuración</h2>
+        <p style="color:#aaa">Verifica que <strong>config.js</strong> esté cargado.</p>
+      </div>`;
+  });
+  throw new Error('HORAS_DISPONIBLES no cargadas');
+}
+
+const state = {
+  pass: '',
+  fecha: null,
+  lunesActual: null,
+  citas: [],
+  bloqueos: [],       // 🆕
+  citaActual: null,
+  horaMarcar: null
+};
+
+const DOW_CORTO = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+const DOW_LARGO = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+const MES_CORTO = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+
+/* ═══════════════════════════════════════════
+   LOGIN
+   ═══════════════════════════════════════════ */
+async function login() {
+  const input = document.getElementById('passInput');
+  const errEl = document.getElementById('loginError');
+  const btn = document.getElementById('btnLogin');
+  const pass = input.value.trim();
+
+  if (!pass) { errEl.textContent = 'Escribe la contraseña'; return; }
+  errEl.textContent = '';
+  btn.disabled = true;
+  btn.textContent = 'Verificando…';
+
+  if (!API_OK) {
+    if (pass.length >= 3) {
+      state.pass = pass;
+      sessionStorage.setItem('lb_admin', pass);
+      abrirPanel();
+    } else {
+      errEl.textContent = 'Contraseña incorrecta';
+      btn.disabled = false; btn.textContent = 'Entrar';
+    }
+    return;
+  }
+
+  try {
+    const r = await fetch(`${API_URL}?action=adminLogin&pass=${encodeURIComponent(pass)}`).then(x => x.json());
+    console.log('🔐 Login:', r);
+    if (r && r.ok) {
+      state.pass = pass;
+      sessionStorage.setItem('lb_admin', pass);
+      abrirPanel();
+    } else {
+      errEl.textContent = 'Contraseña incorrecta';
+      input.value = '';
+      btn.disabled = false; btn.textContent = 'Entrar';
+    }
+  } catch (e) {
+    errEl.textContent = 'Error de conexión';
+    btn.disabled = false; btn.textContent = 'Entrar';
+  }
+}
+
+function logout() {
+  sessionStorage.removeItem('lb_admin');
+  location.reload();
+}
+
+function abrirPanel() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('panel').classList.add('active');
+  calcularLunes();
+  renderCalendario();
+  cargarTodo(true);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const guardado = sessionStorage.getItem('lb_admin');
+  if (guardado) { state.pass = guardado; abrirPanel(); }
+});
+
+/* ═══════════════════════════════════════════
+   FECHAS Y NORMALIZACIÓN
+   ═══════════════════════════════════════════ */
+function calcularLunes() {
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  const dow = hoy.getDay();
+  const offset = dow === 0 ? -6 : 1 - dow;
+  const lunes = new Date(hoy);
+  lunes.setDate(hoy.getDate() + offset);
+  state.lunesActual = lunes;
+}
+
+function fmtYMD(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function normalizarFecha(f) {
+  if (!f) return '';
+  if (typeof f === 'string') {
+    if (f.includes('T')) return f.split('T')[0];
+    return f.substring(0, 10).replace(/^['"]+/, '');
+  }
+  if (f instanceof Date) return fmtYMD(f);
+  return '';
+}
+
+function normalizarHora(h) {
+  if (!h) return '';
+  let s = String(h).trim().replace(/^['"]+/, '').replace(/['"]+$/, '');
+  const match = s.match(/^(\d{1,2}):(\d{2})/);
+  if (match) return `${match[1].padStart(2, '0')}:${match[2]}`;
+  return s;
+}
+
+function formatearHora(h24) {
+  if (!h24) return '';
+  const [hStr, mStr] = String(h24).split(':');
+  let h = parseInt(hStr, 10);
+  if (isNaN(h)) return h24;
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  if (h === 0) h = 12;
+  else if (h > 12) h -= 12;
+  return `${h}:${mStr} ${ampm}`;
+}
+
+function esDiaBloqueado(fecha) {
+  if (!state.bloqueos) state.bloqueos = [];
+  const fNorm = normalizarFecha(fecha);
+  return state.bloqueos.some(b => normalizarFecha(b.fecha) === fNorm);
+}
+
+/* ═══════════════════════════════════════════
+   RENDER CALENDARIO
+   ═══════════════════════════════════════════ */
+function renderCalendario() {
+  const cont = document.getElementById('calSemanas');
+  if (!cont) return;
+  cont.innerHTML = '';
+
+  const lunes = state.lunesActual;
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  const fin = new Date(lunes);
+  fin.setDate(lunes.getDate() + 13);
+
+  document.getElementById('calRange').textContent =
+    `${lunes.getDate()} ${MES_CORTO[lunes.getMonth()]} — ${fin.getDate()} ${MES_CORTO[fin.getMonth()]}`;
+
+  const semanas = ['Esta semana', 'Semana siguiente'];
+  for (let s = 0; s < 2; s++) {
+    const titulo = document.createElement('div');
+    titulo.className = 'semana-titulo';
+    titulo.innerHTML = `<span>${semanas[s]}</span>`;
+    cont.appendChild(titulo);
+
+    const grid = document.createElement('div');
+    grid.className = 'dias-grid';
+
+    for (let i = 0; i < 7; i++) {
+      const idx = s * 7 + i;
+      const f = new Date(lunes);
+      f.setDate(lunes.getDate() + idx);
+      const key = fmtYMD(f);
+      const esHoy = f.getTime() === hoy.getTime();
+      const bloqueado = esDiaBloqueado(key);
+
+      const numCitas = state.citas.filter(c =>
+        normalizarFecha(c.fecha) === key &&
+        c.estado !== 'cancelada'
+      ).length;
+
+      const cell = document.createElement('button');
+      cell.type = 'button';
+      cell.className = 'dia-cell';
+      if (esHoy) cell.classList.add('hoy');
+      if (bloqueado) cell.classList.add('bloqueado');
+      cell.dataset.fecha = key;
+      cell.innerHTML = `
+        <span class="d-num">${f.getDate()}</span>
+        <span class="d-dow">${DOW_CORTO[i]}</span>
+        ${numCitas > 0 && !bloqueado ? `<span class="d-count">${numCitas}</span>` : ''}
+      `;
+
+      cell.addEventListener('click', () => seleccionarDia(key, cell));
+      grid.appendChild(cell);
+    }
+    cont.appendChild(grid);
+  }
+
+  if (state.fecha) {
+    const sel = document.querySelector(`.dia-cell[data-fecha="${state.fecha}"]`);
+    if (sel) sel.classList.add('selected');
+  }
+}
+
+function seleccionarDia(fecha, el) {
+  state.fecha = fecha;
+  document.querySelectorAll('.dia-cell').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+
+  const seccion = document.getElementById('seccionHoras');
+  const wrap = document.getElementById('horasWrap');
+  wrap.style.animation = 'none';
+  void wrap.offsetHeight;
+  wrap.style.animation = '';
+
+  seccion.hidden = false;
+  renderHoras();
+
+  setTimeout(() => {
+    seccion.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+/* ═══════════════════════════════════════════
+   RENDER HORAS
+   ═══════════════════════════════════════════ */
+function renderHoras() {
+  const cont = document.getElementById('horasWrap');
+  const contador = document.getElementById('contadorDia');
+  if (!cont) return;
+
+  const fechaSel = new Date(state.fecha + 'T00:00:00');
+  const bloqueado = esDiaBloqueado(state.fecha);
+
+  const titulo = document.createElement('div');
+  titulo.className = 'horas-titulo';
+
+  const citasDelDia = state.citas.filter(c =>
+    normalizarFecha(c.fecha) === state.fecha &&
+    c.estado !== 'cancelada'
+  );
+
+  const ocupadas = citasDelDia.length;
+  console.log(`📅 ${DOW_LARGO[fechaSel.getDay()]} ${fechaSel.getDate()}: ${ocupadas} citas`, citasDelDia.map(c => `${c.hora}(${c.nombre})`));
+
+  titulo.innerHTML = `
+    <div class="ht-left">
+      <span>Horarios para</span>
+      <strong>${DOW_LARGO[fechaSel.getDay()]} ${fechaSel.getDate()} de ${MES_CORTO[fechaSel.getMonth()]}</strong>
+    </div>
+    <button type="button" class="btn-bloquear-dia ${bloqueado ? 'bloqueado' : ''}" onclick="toggleBloquearDia()">
+      ${bloqueado ? '🔓 Desbloquear día' : '🔒 Bloquear día'}
+    </button>
+  `;
+
+  const grid = document.createElement('div');
+  grid.className = 'horas-grid';
+
+  HORAS_DISPONIBLES.forEach(h => {
+    const hNorm = normalizarHora(h);
+    const cita = citasDelDia.find(c => normalizarHora(c.hora) === hNorm);
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'hora-cell';
+
+    if (bloqueado) {
+      btn.classList.add('bloqueado');
+      btn.textContent = formatearHora(h);
+      btn.disabled = true;
+    } else if (cita) {
+      btn.classList.add('busy');
+      btn.innerHTML = `
+        <span class="hc-hora">${formatearHora(h)}</span>
+        <span class="hc-nombre">${cita.nombre || 'Sin nombre'}</span>
+      `;
+      btn.addEventListener('click', () => abrirModalOcupado(cita));
+    } else {
+      btn.textContent = formatearHora(h);
+      btn.addEventListener('click', () => abrirModalMarcar(h));
+    }
+
+    grid.appendChild(btn);
+  });
+
+  cont.innerHTML = '';
+  cont.appendChild(titulo);
+  cont.appendChild(grid);
+
+  if (contador) {
+    if (bloqueado) {
+      contador.textContent = '🔒 Día bloqueado';
+      contador.style.color = 'var(--danger)';
+    } else {
+      contador.textContent = `${ocupadas} ocupado${ocupadas === 1 ? '' : 's'}`;
+      contador.style.color = '';
+    }
+  }
+
+  actualizarStats();
+}
+
+function actualizarStats() {
+  const hoy = fmtYMD(new Date());
+  const hoyCount = state.citas.filter(c =>
+    normalizarFecha(c.fecha) === hoy && c.estado !== 'cancelada'
+  ).length;
+  const pend = state.citas.filter(c => c.estado === 'pendiente' || !c.estado).length;
+  const comp = state.citas.filter(c => c.estado === 'completada').length;
+  const canc = state.citas.filter(c => c.estado === 'cancelada').length;
+
+  document.getElementById('statHoy').textContent = hoyCount;
+  document.getElementById('statPend').textContent = pend;
+  document.getElementById('statComp').textContent = comp;
+  document.getElementById('statCanc').textContent = canc;
+}
+
+/* ═══════════════════════════════════════════
+   CARGA DE DATOS
+   ═══════════════════════════════════════════ */
+async function cargarTodo(silencioso) {
+  if (!silencioso) toast('🔄 Actualizando…');
+  await cargarCitas();
+  await cargarBloqueos();
+  renderCalendario();
+  if (state.fecha) renderHoras();
+  actualizarStats();
+}
+
+async function cargarCitas() {
+  if (!API_OK) { state.citas = []; return; }
+  try {
+    const r = await fetch(`${API_URL}?action=getAllCitas&pass=${encodeURIComponent(state.pass)}`)
+      .then(x => x.json());
+    console.log('📥 Citas:', r.ok ? `${r.data.length} cargadas` : 'ERROR');
+    if (r && r.ok && Array.isArray(r.data)) {
+      state.citas = r.data.map(c => ({
+        ...c,
+        fecha: normalizarFecha(c.fecha),
+        hora: normalizarHora(c.hora)
+      }));
+    }
+  } catch (e) { console.error('❌ Citas:', e); }
+}
+
+async function cargarBloqueos() {
+  if (!API_OK) { state.bloqueos = []; return; }
+  try {
+    const r = await fetch(`${API_URL}?action=getBloqueos`).then(x => x.json());
+    console.log('📥 Bloqueos:', r.ok ? `${r.data.length} activos` : 'ERROR');
+    if (r && r.ok && Array.isArray(r.data)) {
+      state.bloqueos = r.data.map(b => ({
+        fecha: normalizarFecha(b.fecha),
+        bloqueado: true,
+        motivo: b.motivo
+      }));
+    }
+  } catch (e) { console.error('❌ Bloqueos:', e); }
+}
+
+/* ═══════════════════════════════════════════
+   BLOQUEAR / DESBLOQUEAR DÍA
+   ═══════════════════════════════════════════ */
+async function toggleBloquearDia() {
+  if (!state.fecha) return;
+  const bloqueado = esDiaBloqueado(state.fecha);
+
+  const msg = bloqueado
+    ? '¿Desbloquear este día? Los clientes podrán agendar.'
+    : '¿Bloquear este día? Los clientes NO podrán agendar.';
+  if (!confirm(msg)) return;
+
+  const nuevo = !bloqueado;
+
+  /* Optimistic: actualizar UI primero */
+  if (nuevo) {
+    state.bloqueos.push({ fecha: state.fecha, bloqueado: true, motivo: 'Día cerrado' });
+  } else {
+    state.bloqueos = state.bloqueos.filter(b => normalizarFecha(b.fecha) !== state.fecha);
+  }
+  renderCalendario();
+  renderHoras();
+
+  if (!API_OK) {
+    toast(nuevo ? '🔒 Día bloqueado' : '🔓 Día desbloqueado', false, 'success');
+    return;
+  }
+
+  try {
+    const r = await fetch(`${API_URL}?action=toggleBloqueo`, {
+      method: 'POST',
+      body: JSON.stringify({
+        fecha: state.fecha,
+        bloquear: nuevo,
+        pass: state.pass
+      }),
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+    }).then(x => x.json());
+
+    if (r && r.ok) {
+      toast(nuevo ? '🔒 Día bloqueado' : '🔓 Día desbloqueado', false, 'success');
+      setTimeout(() => cargarTodo(true), 500);
+    } else {
+      /* Revertir */
+      if (nuevo) {
+        state.bloqueos = state.bloqueos.filter(b => normalizarFecha(b.fecha) !== state.fecha);
+      } else {
+        state.bloqueos.push({ fecha: state.fecha, bloqueado: true, motivo: 'Día cerrado' });
+      }
+      renderCalendario();
+      renderHoras();
+      toast(r.msg || 'Error al bloquear', true);
+    }
+  } catch (e) {
+    toast('Error de conexión', true);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   MARCAR HORA LIBRE
+   ═══════════════════════════════════════════ */
+function abrirModalMarcar(hora) {
+  state.horaMarcar = hora;
+  const d = new Date(state.fecha + 'T00:00:00');
+  document.getElementById('mmTitulo').textContent = formatearHora(hora);
+  document.getElementById('mmSub').textContent =
+    `${DOW_LARGO[d.getDay()]} ${d.getDate()} de ${MES_CORTO[d.getMonth()]}`;
+
+  document.getElementById('mNombre').value = '';
+  document.getElementById('mCelular').value = '';
+  document.getElementById('mNotas').value = '';
+
+  document.getElementById('modalMarcar').hidden = false;
+  setTimeout(() => document.getElementById('mNombre').focus(), 100);
+}
+
+function cerrarModalMarcar() {
+  document.getElementById('modalMarcar').hidden = true;
+  state.horaMarcar = null;
+}
+
+async function guardarMarcar() {
+  const nombre = document.getElementById('mNombre').value.trim();
+  const celular = document.getElementById('mCelular').value.trim();
+  const notas = document.getElementById('mNotas').value.trim();
+
+  if (nombre.length < 2) return toast('Escribe el nombre', true);
+
+  const datos = {
+    tipo: 'Adulto', nombre, celular, telefono: celular,
+    ubicacion: '—', direccion: '—', notas,
+    fecha: state.fecha, hora: state.horaMarcar,
+    servicio: 'Corte Adulto', origen: 'admin', pass: state.pass
+  };
+
+  const btn = document.getElementById('btnMarcar');
+  btn.disabled = true;
+  btn.innerHTML = '⏳ Guardando…';
+
+  try {
+    if (!API_OK) {
+      state.citas.push({ id: 'demo-' + Date.now(), ...datos, estado: 'pendiente' });
+      toast('🔒 Hora marcada', false, 'success');
+      cerrarModalMarcar();
+      renderCalendario();
+      renderHoras();
+      return;
+    }
+
+    const r = await fetch(`${API_URL}?action=addCita`, {
+      method: 'POST',
+      body: JSON.stringify(datos),
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+    }).then(x => x.json());
+
+    if (r && r.ok) {
+      /* Optimistic: agregar al state local para pintarlo al instante */
+      state.citas.push({
+        id: r.id,
+        fecha: state.fecha,
+        hora: state.horaMarcar,
+        nombre, celular: celular || '', telefono: celular || '',
+        ubicacion: '—', direccion: '—',
+        servicio: 'Corte Adulto', tipo: 'Adulto',
+        notas, estado: 'pendiente', llamado: false,
+        latitud: '', longitud: ''
+      });
+      cerrarModalMarcar();
+      renderCalendario();
+      renderHoras();
+      toast('🔒 Hora marcada', false, 'success');
+      setTimeout(() => cargarTodo(true), 500);
+    } else {
+      toast(r.msg || 'Error', true);
+    }
+  } catch (e) {
+    toast('Error de conexión', true);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '🔒 Marcar como ocupado';
+  }
+}
+
+/* ═══════════════════════════════════════════
+   MODAL OCUPADO
+   ═══════════════════════════════════════════ */
+function abrirModalOcupado(cita) {
+  state.citaActual = cita;
+  const d = new Date(cita.fecha + 'T00:00:00');
+  document.getElementById('moNombre').textContent = cita.nombre || 'Sin nombre';
+
+  const celular = cita.celular || cita.telefono || '';
+  const tipo = cita.tipo || cita.servicio || 'Corte';
+
+  let html = `
+    <div class="info-row"><span class="i-ico">💈</span>
+      <div><div class="i-lbl">Servicio</div><div class="i-val gold">${tipo}</div></div></div>
+    <div class="info-row"><span class="i-ico">📅</span>
+      <div><div class="i-lbl">Fecha</div><div class="i-val">${DOW_LARGO[d.getDay()]} ${d.getDate()} de ${MES_CORTO[d.getMonth()]}</div></div></div>
+    <div class="info-row"><span class="i-ico">⏰</span>
+      <div><div class="i-lbl">Hora</div><div class="i-val">${formatearHora(cita.hora)}</div></div></div>
+  `;
+
+  if (celular) {
+    html += `<div class="info-row"><span class="i-ico">📱</span>
+      <div><div class="i-lbl">Celular</div><div class="i-val"><a href="tel:${celular}">${celular}</a></div></div></div>`;
+  }
+  if (cita.direccion && cita.direccion !== '—') {
+    html += `<div class="info-row"><span class="i-ico">📍</span>
+      <div><div class="i-lbl">Dirección</div><div class="i-val">${cita.direccion}</div></div></div>`;
+  }
+  if (cita.latitud && cita.longitud) {
+    html += `<div class="info-row"><span class="i-ico">🛰️</span>
+      <div style="flex:1"><div class="i-lbl">GPS</div>
+      <div class="gps-actions">
+        <a class="gps-btn" href="https://www.google.com/maps?q=${cita.latitud},${cita.longitud}" target="_blank">🗺️ Maps</a>
+        <a class="gps-btn sec" href="https://www.google.com/maps/dir/?api=1&destination=${cita.latitud},${cita.longitud}" target="_blank">🧭 Ir</a>
+      </div></div></div>`;
+  }
+  if (cita.notas) {
+    html += `<div class="info-row"><span class="i-ico">📝</span>
+      <div><div class="i-lbl">Notas</div><div class="i-val" style="font-size:.82rem;color:#bbb">${cita.notas}</div></div></div>`;
+  }
+
+  document.getElementById('moInfo').innerHTML = html;
+  document.getElementById('modalOcupado').hidden = false;
+}
+
+function cerrarModalOcupado() {
+  document.getElementById('modalOcupado').hidden = true;
+  state.citaActual = null;
+}
+
+async function liberarHora() {
+  if (!state.citaActual) return;
+  if (!confirm('¿Liberar esta hora? Se cancelará la cita.')) return;
+
+  const id = state.citaActual.id;
+
+  /* Optimistic */
+  state.citas = state.citas.filter(c => c.id !== id);
+  cerrarModalOcupado();
+  renderCalendario();
+  renderHoras();
+  toast('🔓 Hora liberada', false, 'success');
+
+  if (!API_OK) return;
+
+  try {
+    const r = await fetch(`${API_URL}?action=updateEstado`, {
+      method: 'POST',
+      body: JSON.stringify({ id, estado: 'cancelada', pass: state.pass }),
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+    }).then(x => x.json());
+
+    if (!r || !r.ok) {
+      toast(r.msg || 'Error al liberar', true);
+      cargarTodo(true);
+    } else {
+      setTimeout(() => cargarTodo(true), 500);
+    }
+  } catch (e) { toast('Error de conexión', true); }
+}
+
+/* ═══════════════════════════════════════════
+   DIAGNÓSTICO
+   ═══════════════════════════════════════════ */
+async function verDiagnostico() {
+  const box = document.getElementById('debugInfo');
+  box.classList.add('show');
+  box.innerHTML = `<strong>🔍 Diagnosticando…</strong><div class="spinner" style="margin:8px 0"></div>`;
+
+  let html = '<strong>🔍 DIAGNÓSTICO</strong><br><br>';
+  html += `📄 config.js: ${window.API_URL ? '✅' : '❌'}<br>`;
+  html += `🌐 URL: <code>${API_URL ? API_URL.substring(0, 55) + '…' : '(vacío)'}</code><br>`;
+  html += `⏰ Horas: <code>${HORAS_DISPONIBLES.join(', ')}</code><br>`;
+  html += `🔑 Pass: ${state.pass ? '✅' : '❌'}<br><br>`;
+
+  if (API_OK) {
+    try {
+      const ping = await fetch(`${API_URL}?action=ping`).then(x => x.json());
+      html += `📡 Ping: ${ping.ok ? `✅ v${ping.version}` : '❌'}<br>`;
+    } catch(e) { html += `📡 Ping: ❌<br>`; }
+
+    try {
+      const r = await fetch(`${API_URL}?action=getAllCitas&pass=${encodeURIComponent(state.pass)}`)
+        .then(x => x.json());
+      html += `📋 getAllCitas.ok: ${r.ok ? '✅' : '❌'}<br>`;
+      html += `📋 Citas backend: <strong>${Array.isArray(r.data) ? r.data.length : 0}</strong><br>`;
+      if (Array.isArray(r.data) && r.data.length > 0) {
+        const p = r.data[0];
+        html += `<br>Hora ejemplo: <code>${p.hora}</code><br>`;
+        html += `Fecha ejemplo: <code>${p.fecha}</code><br>`;
+      }
+    } catch(e) { html += `📋 getAllCitas: ❌<br>`; }
+
+    try {
+      const b = await fetch(`${API_URL}?action=getBloqueos`).then(x => x.json());
+      html += `📋 getBloqueos.ok: ${b.ok ? '✅' : '❌'}<br>`;
+      html += `🔒 Bloqueos backend: <strong>${Array.isArray(b.data) ? b.data.length : 0}</strong><br>`;
+    } catch(e) { html += `📋 getBloqueos: ❌<br>`; }
+  }
+
+  html += `<br>📦 En memoria: <strong>${state.citas.length} citas, ${state.bloqueos.length} bloqueos</strong>`;
+  box.innerHTML = html;
+}
+
+/* ═══════════════════════════════════════════
+   TOAST
+   ═══════════════════════════════════════════ */
+let toastTimer;
+function toast(msg, error = false, tipo = '') {
+  const t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.className = 'toast show' + (error ? ' error' : (tipo ? ' ' + tipo : ''));
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.className = 'toast', 2800);
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') { cerrarModalMarcar(); cerrarModalOcupado(); }
+});
+</script>
+
+</body>
+</html>
